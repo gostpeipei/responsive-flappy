@@ -2,7 +2,7 @@
 * @Author: asus
 * @Date:   2017-02-21 15:47:30
 * @Last Modified by:   asus
-* @Last Modified time: 2017-02-21 22:11:26
+* @Last Modified time: 2017-02-21 22:48:27
 */
 
 'use strict';
@@ -58,12 +58,21 @@
 		},
 
 		_init : function( imgObj ){
+			var that = this;
 			this.roleList = [];
 			// 创建小鸟
 			this.birds = Fly.factory( 'birds',{
 				ctx : this.ctx,
-				img : imgObj.birds
+				cv : this.cv,
+				img : imgObj.birds,
+				land : imgObj.land
 			})
+			//给小鸟添加订阅者  Game为订阅者
+			this.birds.addListener(function(){
+				that.over();
+			})
+
+
 			//创建天空
 			for(var i = 0; i < 3; i++){
 				this.roleList.push(Fly.factory( 'sky',{
@@ -120,19 +129,20 @@
 				that.birds.draw( that.delta )
 
 				that.ctx.restore()
+
 				//判断游戏结束
 				// 超出顶部结束
-				if( that.birds.y <= 0 ){
-					that.over();
-				}
-				//落地结束
-				if( that.birds.y >= that.cv.height - imgObj.land.height - 15){
-					that.over();
-				}
-				//碰到管道结束
-				if( that.ctx.isPointInPath(that.birds.x + 10,that.birds.y + 15)){
-					that.over();
-				}
+				// if( that.birds.y <= 0 ){
+				// 	that.over();
+				// }
+				// //落地结束
+				// if( that.birds.y >= that.cv.height - imgObj.land.height - 15){
+				// 	that.over();
+				// }
+				// //碰到管道结束
+				// if( that.ctx.isPointInPath(that.birds.x + 10,that.birds.y + 15)){
+				// 	that.over();
+				// }
 				if( that.gameContinue ){
 					window.requestAnimationFrame( that.render );
 				}

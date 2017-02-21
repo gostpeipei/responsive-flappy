@@ -2,13 +2,14 @@
 * @Author: asus
 * @Date:   2017-02-21 00:20:01
 * @Last Modified by:   asus
-* @Last Modified time: 2017-02-21 19:32:42
+* @Last Modified time: 2017-02-21 22:53:07
 */
 
 'use strict';
 (function(Fly){
 	var Birds = function( config ){
 		this.ctx = config.ctx;
+		this.cv = config.cv;
 		this.img = config.img;
 		this.imgW = this.img.width/3;
 		this.imgH = this.img.height;
@@ -20,10 +21,16 @@
 		this.curAngle = 0;
 		this.maxAngle = 45;
 		this.maxV = 0.3
+
+		this.listeners = [];   //小鸟是发布者
+		this.land = config.land;
 	}
 	Birds.prototype = {
 		constructor : Birds,
 		draw : function( delta ){
+			
+			this.isDie();
+
 			delta = delta || 0
 			this.v += this.a * delta;
 			this.y += this.v * delta + 0.5 * this.a * Math.pow(delta,2);
@@ -41,6 +48,20 @@
 		},
 		changeSpeed : function (speed){
 			this.v = speed;
+		},
+
+		// 添加订阅者
+		addListener : function( callback ){
+			this.listeners.push( callback )   //将订阅者的方法添加到数组中
+		},
+
+		//判断小鸟碰撞
+		isDie : function(){
+			if(this.y <= 0 || this.y >= (this.cv.height - this.land.height - 15) || this.ctx.isPointInPath(this.x + 10,this.y + 15)){
+				this.listeners.forEach(function(fn){
+					fn();
+				})
+			}
 		}
 		
 	}
