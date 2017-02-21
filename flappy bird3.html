@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<style>
+		body{
+			width: 100%;
+			box-sizing: border-box;
+			padding: 0 10px;
+			text-align: center;
+		}
+		canvas{
+			border: 1px solid #000;
+		}
+		image{
+			width: 100%;
+			height: auto;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="cv"></canvas>
+	<script src="js3/utils.js"></script>
+	<script src="js3/sky.js"></script>
+	<script src="js3/birds.js"></script>
+	<script src="js3/land.js"></script>
+	<script src="js3/pipe.js"></script>
+	<script>
+		var cv = document.getElementById('cv');
+		var ctx = cv.getContext('2d');
+
+		function getClient(){
+			return {
+				width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 0,
+				height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight || 0
+			}
+		}
+		function getScreen(){
+			return {
+				width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 0,
+				height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight || 0
+			}
+		}
+		
+		cv.width = 1200;
+		cv.height = 600;
+		cv.style.width = getClient().width * 0.9 + "px";
+
+		var imgList = ['birds','land','pipe1','pipe2','sky'];
+		var roleList = [];   //存放所有环境对象的数组;
+		Fly.loadImg(imgList,function(imgObj){
+			// 创建小鸟
+			var birds = new Fly.Birds({
+				ctx : ctx,
+				img : imgObj.birds
+			})
+			//创建天空
+			for(var i = 0; i < 3; i++){
+				roleList.push(new Fly.Sky({
+					ctx : ctx,
+					img : imgObj.sky,
+					x : imgObj.sky.width * i,
+					speed : -0.2
+				}))
+			}
+			var lastTime = new Date();
+			var curTime = 0;
+
+			var render = function(){
+				curTime = new Date();
+				var delta = curTime - lastTime; 
+				lastTime = curTime;
+
+				ctx.clearRect(0,0,cv.width,cv.height);
+				ctx.save();
+				//渲染环境
+				roleList.forEach(function( role ){
+					role.draw( delta )
+				})
+
+				//渲染小鸟
+				birds.draw( delta )
+
+				//渲染管道
+				
+				//渲染陆地
+
+				ctx.restore()
+				window.requestAnimationFrame( render );
+			}
+				window.requestAnimationFrame( render );
+			console.log(getClient().width)
+			if(getClient().width * 0.9 > 640){
+				event = 'click'
+				// console.log(event)
+			}else {
+				event = 'touchstart'
+				// console.log(event)
+			}
+			cv.addEventListener(event,function(){
+				birds.changeSpeed(-0.65);
+			})
+			// cv.addEventListener('touchend',function(){
+			// 	birds.changeSpeed(-0.65);
+			// })
+		})
+
+
+	</script>
+</body>
+</html>
