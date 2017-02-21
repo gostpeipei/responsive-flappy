@@ -2,7 +2,7 @@
 * @Author: asus
 * @Date:   2017-02-21 15:47:30
 * @Last Modified by:   asus
-* @Last Modified time: 2017-02-21 21:56:23
+* @Last Modified time: 2017-02-21 22:11:26
 */
 
 'use strict';
@@ -52,7 +52,7 @@
 		over : function(){
 			this.gameContinue = false;
 			screen.style.display = 'block';
-			btn.style.fontSize = "0.25rem";
+			btn.style.fontSize = "0.22rem";
 			btn.innerHTML = "Try Again";
 			p.innerHTML = "游戏结束";
 		},
