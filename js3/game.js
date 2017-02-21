@@ -2,7 +2,7 @@
 * @Author: asus
 * @Date:   2017-02-21 15:47:30
 * @Last Modified by:   asus
-* @Last Modified time: 2017-02-21 20:21:22
+* @Last Modified time: 2017-02-21 21:56:23
 */
 
 'use strict';
@@ -12,12 +12,14 @@
 
 	var btn = document.getElementById('btn');
 	var screen = document.getElementById('screen');
-
+	var p = document.getElementById('p');
+	var pause = document.getElementById('pause');
 	var Game = function( id ){
 		this.cv = Fly.createCv( id );
 		this.ctx = this.cv.getContext('2d');
 		this.imgList = ['birds','land','pipe1','pipe2','sky'];
 		this.roleList = null;   //存放所有环境对象的数组;
+		// this.status = {}     //存放暂停状态
 		this.curTime = 0;
 		this.gameContinue = false;
 		this.birds = null;
@@ -25,6 +27,7 @@
 		this.upEvt = null;
 		this.lastTime = null;
 		this.delta = 0;
+		this.render = null;
 	}
 	Game.prototype = {
 		constructor : Game,
@@ -33,9 +36,9 @@
 			var that = this;
 			Fly.loadImg(this.imgList,function(imgObj){
 
-				that.delta = 0;
+				// that.delta = 0;
 
-				that.lastTime = new Date();
+				// that.lastTime = new Date();
 
 				that._init( imgObj );
 
@@ -49,6 +52,9 @@
 		over : function(){
 			this.gameContinue = false;
 			screen.style.display = 'block';
+			btn.style.fontSize = "0.25rem";
+			btn.innerHTML = "Try Again";
+			p.innerHTML = "游戏结束";
 		},
 
 		_init : function( imgObj ){
@@ -95,7 +101,7 @@
 
 		draw : function( imgObj ){
 			var that = this;
-			var render = function(){
+			that.render = function(){
 				if( that.gameContinue ){
 					that.curTime = new Date();
 					that.delta = that.curTime - that.lastTime; 
@@ -114,9 +120,8 @@
 				that.birds.draw( that.delta )
 
 				that.ctx.restore()
-
 				//判断游戏结束
-				//超出顶部结束
+				// 超出顶部结束
 				if( that.birds.y <= 0 ){
 					that.over();
 				}
@@ -129,10 +134,10 @@
 					that.over();
 				}
 				if( that.gameContinue ){
-					window.requestAnimationFrame( render );
+					window.requestAnimationFrame( that.render );
 				}
 			}
-					window.requestAnimationFrame( render );
+					window.requestAnimationFrame( that.render );
 		},
 
 		bindEvent : function(){
@@ -153,7 +158,6 @@
 					e.cancleBubble;
 				}
 				that.birds.changeSpeed(-0.6);
-				console.log(3)
 			})
 
 			btn.addEventListener(that.downEvt,function(e){
@@ -166,8 +170,8 @@
 				this.data = this.style.backgroundColor;
 				this.style.backgroundColor = 'transparent';
 				this.style.color = '#fff';
-				console.log(1)
 			})
+
 			btn.addEventListener(that.upEvt,function(e){
 				e = e || window.event;
 				if(e.stopPropagation){
@@ -180,8 +184,23 @@
 				screen.style.display = "none";
 				that.gameContinue = true;
 
-				Fly.loadImg(that.imgList,function(imgObj){
+				// //继续功能
+				// if(p.innerHTML === "游戏暂停"){
+				// 	Fly.loadImg(that.imgList,function(imgObj){
+				// 		window.requestAnimationFrame( that.render );
+				// 		that.gameContinue = true;
+				// 		that.delta = that.status.pauseDelta;
+				// 		that.lastTime = that.status.pauseTime;
+				// 		// that.ctx.clearRect(0,0,that.cv.width,that.cv.height)
+				// 		// that.ctx.beginPath();
+				// 		// that._init( imgObj )
+				// 		// that.draw( imgObj );
+				// 	})
+				// 	return
+				// }
 
+				//重新开始功能
+				Fly.loadImg(that.imgList,function(imgObj){
 					that.delta = 0;
 					that.lastTime = new Date();
 					that.ctx.clearRect(0,0,that.cv.width,that.cv.height)
@@ -190,6 +209,27 @@
 					that.draw( imgObj );
 				})
 			})
+
+			// pause.addEventListener(that.downEvt,function(e){
+			// 	e = e || window.event;
+			// 	if(e.stopPropagation){
+			// 		e.stopPropagation;
+			// 	}else{
+			// 		e.cancleBubble = true;
+			// 	}
+			// 	//在状态对象中,存放当前状态
+			// 	that.status.pauseTime = that.lastTime;
+			// 	that.status.pauseDelta = that.delta;
+
+			// 	that.gameContinue = false;
+
+
+			// 	screen.style.display = 'block';
+			// 	btn.style.fontSize = "0.25rem";
+			// 	btn.innerHTML = "继续游戏";
+			// 	p.innerHTML = "游戏暂停";
+
+			// })
 
 
 		}
