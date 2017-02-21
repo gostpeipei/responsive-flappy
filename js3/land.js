@@ -2,7 +2,7 @@
 * @Author: asus
 * @Date:   2017-02-21 14:02:05
 * @Last Modified by:   asus
-* @Last Modified time: 2017-02-21 15:10:05
+* @Last Modified time: 2017-02-21 19:32:36
 */
 
 'use strict';
@@ -20,6 +20,7 @@
 	Land.prototype = {
 		constructor : Land,
 		draw : function( delta ){
+			delta = delta || 0
 			this.x += this.speed * delta;
 			if(this.x <= -this.imgW){
 				this.x += this.imgW * 5;

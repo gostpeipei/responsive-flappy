@@ -2,21 +2,29 @@
 * @Author: asus
 * @Date:   2017-02-21 15:47:30
 * @Last Modified by:   asus
-* @Last Modified time: 2017-02-21 16:45:39
+* @Last Modified time: 2017-02-21 20:21:22
 */
 
 'use strict';
 (function(Fly){
+	//设置html的字体大小
+	document.documentElement.style.fontSize = Fly.getClient().width/640 * 64+"px";
+
+	var btn = document.getElementById('btn');
+	var screen = document.getElementById('screen');
+
 	var Game = function( id ){
 		this.cv = Fly.createCv( id );
 		this.ctx = this.cv.getContext('2d');
 		this.imgList = ['birds','land','pipe1','pipe2','sky'];
-		this.roleList = [];   //存放所有环境对象的数组;
-		this.lastTime = new Date();
+		this.roleList = null;   //存放所有环境对象的数组;
 		this.curTime = 0;
-		this.gameContinue = true;
+		this.gameContinue = false;
 		this.birds = null;
-		this.evt = null;
+		this.downEvt = null;
+		this.upEvt = null;
+		this.lastTime = null;
+		this.delta = 0;
 	}
 	Game.prototype = {
 		constructor : Game,
@@ -24,7 +32,11 @@
 		start : function(){
 			var that = this;
 			Fly.loadImg(this.imgList,function(imgObj){
-				
+
+				that.delta = 0;
+
+				that.lastTime = new Date();
+
 				that._init( imgObj );
 
 				that.draw( imgObj );
@@ -36,9 +48,11 @@
 
 		over : function(){
 			this.gameContinue = false;
+			screen.style.display = 'block';
 		},
 
 		_init : function( imgObj ){
+			this.roleList = [];
 			// 创建小鸟
 			this.birds = Fly.factory( 'birds',{
 				ctx : this.ctx,
@@ -58,7 +72,7 @@
 			for(var i = 0; i < 9; i++){
 				this.roleList.push(Fly.factory( 'pipe',{
 					ctx : this.ctx,
-					cv : cv,
+					cv : this.cv,
 					imgUp : imgObj.pipe2,
 					imgDown : imgObj.pipe1,
 					x : imgObj.pipe1.width * 3 * i + 300,
@@ -82,21 +96,22 @@
 		draw : function( imgObj ){
 			var that = this;
 			var render = function(){
-				that.curTime = new Date();
-				var delta = that.curTime - that.lastTime; 
-				that.lastTime = that.curTime;
-
+				if( that.gameContinue ){
+					that.curTime = new Date();
+					that.delta = that.curTime - that.lastTime; 
+					that.lastTime = that.curTime;
+				}
 				that.ctx.clearRect(0,0,that.cv.width,that.cv.height);
 				that.ctx.save();
 				that.ctx.beginPath();
 
 				//渲染环境
 				that.roleList.forEach(function( role ){
-					role.draw( delta )
+					role.draw( that.delta )
 				})
 
 				//渲染小鸟
-				that.birds.draw( delta )
+				that.birds.draw( that.delta )
 
 				that.ctx.restore()
 
@@ -110,7 +125,7 @@
 					that.over();
 				}
 				//碰到管道结束
-				if( that.ctx.isPointInPath(that.birds.x,that.birds.y - 15)){
+				if( that.ctx.isPointInPath(that.birds.x + 10,that.birds.y + 15)){
 					that.over();
 				}
 				if( that.gameContinue ){
@@ -123,15 +138,60 @@
 		bindEvent : function(){
 			var that = this;
 			if(Fly.getClient().width * 0.9 > 640){
-				that.evt = 'click'
+				that.downEvt = 'mousedown';
+				that.upEvt = 'mouseup';
 			}else {
-				that.evt = 'touchstart'
+				that.downEvt = 'touchstart';
+				that.upEvt = 'touchend';
 			}
-			cv.addEventListener(that.evt,function(e){
+
+			this.cv.addEventListener(that.downEvt,function(e){
 				e = e || window.event ;
-				e.preventDefault(); 
+				if(e.stopPropagation){
+					e.stopPropagation;
+				}else{
+					e.cancleBubble;
+				}
 				that.birds.changeSpeed(-0.6);
+				console.log(3)
 			})
+
+			btn.addEventListener(that.downEvt,function(e){
+				e = e || window.event;
+				if(e.stopPropagation){
+					e.stopPropagation;
+				}else{
+					e.cancleBubble = true;
+				}
+				this.data = this.style.backgroundColor;
+				this.style.backgroundColor = 'transparent';
+				this.style.color = '#fff';
+				console.log(1)
+			})
+			btn.addEventListener(that.upEvt,function(e){
+				e = e || window.event;
+				if(e.stopPropagation){
+					e.stopPropagation;
+				}else{
+					e.cancleBubble = true;
+				}
+				this.style.backgroundColor = this.data;
+				this.style.color = '#000';
+				screen.style.display = "none";
+				that.gameContinue = true;
+
+				Fly.loadImg(that.imgList,function(imgObj){
+
+					that.delta = 0;
+					that.lastTime = new Date();
+					that.ctx.clearRect(0,0,that.cv.width,that.cv.height)
+					that.ctx.beginPath();
+					that._init( imgObj )
+					that.draw( imgObj );
+				})
+			})
+
+
 		}
 
 	}

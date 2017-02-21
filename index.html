@@ -3,25 +3,18 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-	<style>
-		body{
-			width: 100%;
-			box-sizing: border-box;
-			padding: 0 10px;
-			text-align: center;
-		}
-		canvas{
-			border: 1px solid #000;
-		}
-		image{
-			width: 100%;
-			height: auto;
-		}
-	</style>
+	<link rel="stylesheet" href="less/index.css">
 </head>
 <body>
 	<!-- <canvas id="cv"></canvas> -->
-	<div id="cv"></div>
+	<div id="cv">
+		<div class="screen" id="screen">
+			<div class="box">
+				<p>点击开始游戏</p>
+				<button id="btn">Start</button>
+			</div>
+		</div>
+	</div>
 	<script src="js3/utils.js"></script>
 	<script src="js3/sky.js"></script>
 	<script src="js3/birds.js"></script>
@@ -29,9 +22,9 @@
 	<script src="js3/pipe.js"></script>
 	<script src="js3/game.js"></script>
 	<script>
-
 		var game = Fly.createGame('cv');
 		game.start();
+
 	</script>
 </body>
 </html>

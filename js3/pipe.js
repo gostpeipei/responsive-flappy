@@ -2,7 +2,7 @@
 * @Author: asus
 * @Date:   2017-02-21 14:02:11
 * @Last Modified by:   asus
-* @Last Modified time: 2017-02-21 16:17:05
+* @Last Modified time: 2017-02-21 20:22:34
 */
 
 'use strict';
@@ -22,11 +22,13 @@
 	Pipe.prototype = {
 		constructor : Pipe,	
 		draw : function( delta ){
+			delta = delta || 0
 			this.x += this.speed * delta;
 			if(this.x <= -this.imgW * 3){
 				this.x += this.imgW * 3 * 9;
 				this.y = Math.random() * 200 + 50 - this.imgH;
 			}
+
 			this.ctx.drawImage(this.imgUp,this.x,this.y,this.imgW,this.imgH)
 			this.ctx.drawImage(this.imgDown,this.x,this.imgH + this.y + this.pipeSpace,this.imgW,this.imgH)
 

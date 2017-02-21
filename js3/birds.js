@@ -2,7 +2,7 @@
 * @Author: asus
 * @Date:   2017-02-21 00:20:01
 * @Last Modified by:   asus
-* @Last Modified time: 2017-02-21 13:53:21
+* @Last Modified time: 2017-02-21 19:32:42
 */
 
 'use strict';
@@ -24,6 +24,7 @@
 	Birds.prototype = {
 		constructor : Birds,
 		draw : function( delta ){
+			delta = delta || 0
 			this.v += this.a * delta;
 			this.y += this.v * delta + 0.5 * this.a * Math.pow(delta,2);
 			this.curAngle = this.v/this.maxV * this.maxAngle

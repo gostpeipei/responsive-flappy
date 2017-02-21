@@ -2,7 +2,7 @@
 * @Author: asus
 * @Date:   2017-02-20 23:48:34
 * @Last Modified by:   asus
-* @Last Modified time: 2017-02-21 16:46:11
+* @Last Modified time: 2017-02-21 17:15:16
 */
 
 'use strict';
@@ -39,7 +39,6 @@
 		cv.style.width = Fly.getClient().width * 0.9 + "px";
 		var dv = document.getElementById(id);
 		dv.appendChild(cv);
-
 		return cv;
 	}
 
